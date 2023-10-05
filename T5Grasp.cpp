@@ -7,6 +7,11 @@
 
 using namespace std;
 
+long long getCurrentTimeMillis() {
+    using namespace std::chrono;
+    return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
 int hamming_cuadrado_a(string sol_in, vector<string>entrada){
     int len = sol_in.length();
     int len_entrada = entrada.size();
@@ -55,59 +60,59 @@ string genera_random_sol(int largo){
 
 }
  */
-pair<string,int> greedy(int largo,vector<string>entrada){
-    //Se crea una solucion actual
+pair<string, int> greedy(int largo, vector<string> entrada, long tiempo_max_ms) {
     string sol_ac = genera_random_sol(largo);
-
-    // Se calcula el costo de la actual y se asume como mejor solucion
     int costo_ac = hamming_cuadrado_a(sol_ac, entrada);
     int mejor_costo = costo_ac;
-     // Registra el tiempo actual una vez
     string sol_final = sol_ac;
-    
-    string base = "AGTC";
-    int index = rand()%largo;
-    sol_final[index] = base[rand()%4];
-    int costo_final = hamming_cuadrado_a(sol_final,entrada);
-    if(costo_final > costo_ac){
-        mejor_costo = costo_final;
+    long long start_time = getCurrentTimeMillis();
+
+    while (getCurrentTimeMillis() - start_time < tiempo_max_ms) {
+        int index = rand() % largo;
+        string nueva_sol = sol_final;
+        nueva_sol[index] = "AGTC"[rand() % 4];
+        int nuevo_costo = hamming_cuadrado_a(nueva_sol, entrada);
+
+        if (nuevo_costo < mejor_costo) {
+            mejor_costo = nuevo_costo;
+            sol_final = nueva_sol;
+            cout << "Nueva mejor solución encontrada -> " << " Costo: " << mejor_costo << endl;
+        }
     }
-    return make_pair(sol_final,mejor_costo);
+
+    return make_pair(sol_final, mejor_costo);
 }
 
+
 /* string GRASP(int tiempo_max){
-    string sol_in = genera_random_sol();
-    while (1) {
-    auto tiempo_transcurrido = std::chrono::duration_cast<std::chrono::milliseconds>(tiempo_actual - tiempo_inicio).count();
-    if (tiempo_transcurrido >= tiempo_max * 1000) {
-        // El tiempo ha transcurrido o se ha procesado toda la entrada, detén el algoritmo
-        break;
-    }
 
-    tiempo_actual = std::chrono::steady_clock::now(); // Actualiza el tiempo actual en cada iteración
-} */
+}  */
 
 
-int main(int argc, char*argv[]){
+int main(int argc, char* argv[]) {
     srand(time(NULL));
-    if (argc != 3 || string(argv[1]) != "-i") {
-        cout << "Uso incorrecto. Debe especificar una instancia de problema con '-i <nombre-archivo> -t tiempo'." << endl;
+    if (argc != 5 || string(argv[1]) != "-i" || string(argv[3]) != "-t") {
+        cout << "Uso incorrecto. Debe especificar una instancia de problema con '-i <nombre-archivo> -t <tiempo>'." << endl;
         return 1; // Código de error
     }
-
+    
     string instancia = argv[2];
-    //string tiempo_max_str = argv[4]; // Cambia el nombre a tiempo_max_str
-    //int tiempo_max = stoi(tiempo_max_str); // Convierte tiempo_max_str a entero
+    long long tiempo_max_segundos = stoi(argv[4]); // Convierte el tiempo máximo a segundos
+    long long tiempo_max_ms = tiempo_max_segundos * 1000; // Convierte a milisegundos
 
     vector<string> entrada = lee_instancia(instancia);
     int len = entrada[0].length();
-    for (int i=0;i<entrada.size();i++){
-        cout<<entrada[i]<<endl;
+
+    long long start_time = getCurrentTimeMillis();
+    long long end_time = start_time + tiempo_max_ms; // Calcula el tiempo de finalización
+
+    while (getCurrentTimeMillis() < end_time) {
+        pair<string, int> res = greedy(len, entrada, tiempo_max_ms);
+        cout << "Solución encontrada es: " << res.first << " Costo: " << res.second << endl;
     }
-    cout<<len<<endl;
-    pair<string,int> res = greedy(entrada[0].length(),entrada); 
-  
-    cout<<"Solución encontrada es: " << res.first << " " << "Costo: "<<res.second<<endl;
+    
     return 0;
 }
+
+
 
