@@ -18,7 +18,7 @@ int hamming_cuadrado_a(string sol_in, vector<string>entrada){
     int len = sol_in.length();
     int len_entrada = entrada.size();
     vector<int>costos;
-    
+
     for (int i=0;i<len_entrada;i++){
         int costo = 0;
         for (int j=0 ; j<len ; j++){
@@ -28,10 +28,10 @@ int hamming_cuadrado_a(string sol_in, vector<string>entrada){
         }
         costos.push_back(costo);
     }
-    
+
     int costos_len = costos.size();
     int costo_total=0;
-    
+
     for (int i=0 ;i<costos_len ;i++){
         costo_total += costos[i]*costos[i];
     }
@@ -39,7 +39,7 @@ int hamming_cuadrado_a(string sol_in, vector<string>entrada){
 }
 
 vector<string> lee_instancia(string nombre){
-    ifstream archivo_txt(nombre); 
+    ifstream archivo_txt(nombre);
     vector<string> mat;
     string linea;
     while (getline(archivo_txt, linea)) {
@@ -94,26 +94,23 @@ int main(int argc, char* argv[]) {
         cout << "Uso incorrecto. -t <tiempo> -it <intentos>" << endl;
         return 1; // Código de error
     }
-    
+
     for(int i=0;i<100;i++){
         string instancia = "inst_200_15_4_"+to_string(i)+".txt";
         long long tiempo_max_segundos = stoi(argv[2]); // Convierte el tiempo máximo a segundos
         int intentos = stoi(argv[4]);
         int determinismo = stoi(argv[6]);
         long long tiempo_max_ms = tiempo_max_segundos * 1000; // Convierte a milisegundos
-
         vector<string> entrada = lee_instancia(instancia);
         int len = entrada[0].length();
-
         long long start_time = getCurrentTimeMillis();
         long long end_time = start_time + tiempo_max_ms; // Calcula el tiempo de finalización
-
 
         pair<int,int> mejor_global; // Tiempo, Costo
         while (getCurrentTimeMillis() < end_time) {
             pair<string,int> greedy = Greedy_probabilista(entrada,determinismo);
             pair<string,int> primera_sol = greedy;
-            
+
             pair<string,int> bl = busqueda_local(greedy.first,entrada,intentos);
             pair<string,int> mejor_sol = bl;
             cout<<mejor_sol.second<<" "<<primera_sol.second<<endl;
@@ -124,12 +121,7 @@ int main(int argc, char* argv[]) {
                 mejor_global.first = (tiempo_actual-start_time)/1000.0;
             }
         }
-
-        cout << "Mejor solución encontrada es: " << mejor_global.second << "en tiempo: "<<mejor_global.first<<endl;
-    return 0;
+        cout << "Mejor solución para la instancia " << instancia << "es: " << mejor_global.second << "en tiempo: "<<mejor_global.first<<endl;
     }
+    return 0;
 }
-
-
-
-
