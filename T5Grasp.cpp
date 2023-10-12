@@ -160,7 +160,6 @@ int main(int argc, char* argv[]) {
     }
 
     cout << "Mejor solución encontrada es: " << mejor_solucion.first << " Costo: " << mejor_solucion.second << endl;
-
     return 0;
 }
 

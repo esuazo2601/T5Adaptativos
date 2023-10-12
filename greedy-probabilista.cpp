@@ -38,10 +38,10 @@ int generate_random_value(){
 pair<string,int> Greedy_probabilista(vector<string>mat, int deter_int){  
     string ADN = "ATCG"; //Para selección random
     unordered_map<char, int> frec;
-    string resultado(mat.size(), ' '); // Inicializa resultado con espacios
     
     int lenY = mat.size();
     int lenX = mat.at(0).length();
+    string resultado(lenX, ' '); // Inicializa la solución con espacios
     
     //Si el numero generado es mayor al grado de determinismo
     if(generate_random_value() > deter_int){

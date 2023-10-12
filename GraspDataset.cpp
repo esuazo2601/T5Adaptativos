@@ -116,6 +116,7 @@ int main(int argc, char* argv[]) {
             
             pair<string,int> bl = busqueda_local(greedy.first,entrada,intentos);
             pair<string,int> mejor_sol = bl;
+            cout<<mejor_sol.second<<" "<<primera_sol.second<<endl;
             if (mejor_sol.second < primera_sol.second) {
                 mejor_global.second = mejor_sol.second;
 
