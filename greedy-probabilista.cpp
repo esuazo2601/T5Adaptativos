@@ -11,25 +11,6 @@ int distancia(char a, char b);
 char menor_distancia(vector<pair<int, char>>& dist, int j);
 vector<string>mat;
 
-
-/* int main(int argc, char* argv[]) {
-    srand(time(NULL));
-    if (argc != 4 || string(argv[1]) != "-i") {
-        std::cout << "Uso incorrecto. Debe especificar una instancia de problema con -i <nombre-archivo> <determinismo>" << std::endl;
-        return 1; // Código de error
-    }
-
-    string nombreArchivo = argv[2];
-    string determinismo = argv[3];
-    int deter_int = stoi(determinismo); //se pasa de string a int el argumento
-    if (deter_int < 1 || deter_int > 100){
-        cerr << "El grado de determinismo debe estar entre 1 y 100"<<endl;
-        return 1;
-    }
-    int costo = Greedy_probabilista(nombreArchivo,deter_int);
-    return 0;
-} */
-
 int generate_random_value(){
     int randomValue = rand()%100 + 1;
     return randomValue;

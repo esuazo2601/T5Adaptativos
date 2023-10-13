@@ -1,9 +1,11 @@
 //60 segundos para la entrega
+#include "greedy-probabilista.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <chrono>
 #include <thread>
+#include <limits.h>
 
 using namespace std;
 
@@ -56,38 +58,6 @@ string genera_random_sol(int largo){
     return sol;
 }
 
-pair<string, int> greedy(int largo, vector<string> entrada, int num_intentos) {
-    string mejor_solucion = genera_random_sol(largo);
-    int mejor_costo = hamming_cuadrado_a(mejor_solucion, entrada);
-
-    for (int intento = 0; intento < num_intentos; intento++) {
-        string sol_actual = genera_random_sol(largo);
-        int costo_actual = hamming_cuadrado_a(sol_actual, entrada);
-
-        while (true) {
-            int index = rand() % largo;
-            string nueva_sol = sol_actual;
-            nueva_sol[index] = "AGTC"[rand() % 4];
-            int nuevo_costo = hamming_cuadrado_a(nueva_sol, entrada);
-
-            if (nuevo_costo < costo_actual) {
-                costo_actual = nuevo_costo;
-                sol_actual = nueva_sol;
-            } else {
-                break;  // Salir si no hay mejora
-            }
-        }
-
-        if (costo_actual < mejor_costo) {
-            mejor_costo = costo_actual;
-            mejor_solucion = sol_actual;
-        }
-    }
-
-    return make_pair(mejor_solucion, mejor_costo);
-}
-
-
 pair<string, int> busqueda_local(const string& solucion_actual, const vector<string>& entrada, int num_iteraciones) {
     string mejor_solucion = solucion_actual;
     int mejor_costo = hamming_cuadrado_a(solucion_actual, entrada);
@@ -117,52 +87,48 @@ pair<string, int> busqueda_local(const string& solucion_actual, const vector<str
 }
 
 
-pair<string, int> grasp(int largo, vector<string> entrada, long tiempo_max_ms) {
-    pair<string, int> solucion_greedy = greedy(largo, entrada, 10);
-    string sol_greedy = solucion_greedy.first;
-
-    // Aplicar búsqueda local a la solución Greedy
-    pair<string, int> solucion_final = busqueda_local(sol_greedy, entrada,10);
-
-    return solucion_final;
-}
-
 int main(int argc, char* argv[]) {
-    srand(time(NULL));
-    if (argc != 5 || string(argv[1]) != "-i" || string(argv[3]) != "-t") {
-        cout << "Uso incorrecto. Debe especificar una instancia de problema con '-i <nombre-archivo> -t <tiempo>'." << endl;
+    srand(time(nullptr));
+    if (argc != 9 || string(argv[1]) != "-i" || string(argv[3]) != "-t" || string(argv[5]) != "-it" || string(argv[7]) != "-d") {
+        std::cout << "Uso incorrecto. -i <instancia> -t <tiempo> -it <intentos> -d <determinismo>" << endl;
         return 1; // Código de error
     }
-    
+
     string instancia = argv[2];
     long long tiempo_max_segundos = stoi(argv[4]); // Convierte el tiempo máximo a segundos
-    long long tiempo_max_ms = tiempo_max_segundos * 1000; // Convierte a milisegundos
-
+    int intentos = stoi(argv[6]);
+    int determinismo = stoi(argv[8]);
     vector<string> entrada = lee_instancia(instancia);
     int len = entrada[0].length();
 
-    long long start_time = getCurrentTimeMillis();
-    long long end_time = start_time + tiempo_max_ms; // Calcula el tiempo de finalización
+    auto tiempoInicio = chrono::high_resolution_clock::now();
 
-    pair<string, int> mejor_solucion;
-    bool primera_solucion = true;
+    tuple<int, string, string> mejor_global; // Costo ,Tiempo, Resultado
+    mejor_global = make_tuple(INT_MAX,"","");
+    while (true) {
+        auto tiempoActual = chrono::high_resolution_clock::now();
+        auto duracion = chrono::duration_cast<chrono::milliseconds>(tiempoActual - tiempoInicio);
 
-    while (getCurrentTimeMillis() < end_time) {
-        pair<string, int> solucion_actual = grasp(len, entrada, tiempo_max_ms);
+        if (duracion.count() >= tiempo_max_segundos) {
+            break; // Sal del bucle while y pasa a la siguiente iteración del bucle for
+        }
 
-        if (primera_solucion || solucion_actual.second < mejor_solucion.second) {
-            mejor_solucion = solucion_actual;
-            primera_solucion = false;
+        pair<string, int> greedy = Greedy_probabilista(entrada, determinismo);
+        pair<string, int> bl = busqueda_local(greedy.first, entrada, intentos);
 
-            long long tiempo_actual = getCurrentTimeMillis();
-            cout << "Tiempo: " << (tiempo_actual - start_time) / 1000.0 << " segundos, Costo: " << mejor_solucion.second << endl;
+        if (bl.second < get<0>(mejor_global)) {
+            auto tiempoTranscurrido = chrono::high_resolution_clock::now() - tiempoInicio;
+            float tiempoEnSegundos = chrono::duration<float>(tiempoTranscurrido).count();
+            mejor_global = make_tuple(bl.second,to_string(tiempoEnSegundos),bl.first);
         }
     }
+    
+    std::cout <<"Solución encontrada: "<<get<2>(mejor_global)<<endl; 
+    std::cout <<"Costo: "<<get<0>(mejor_global)<<endl; 
+    std::cout << "En tiempo: " << get<1>(mejor_global) <<" segundos"<<endl;
 
-    cout << "Mejor solución encontrada es: " << mejor_solucion.first << " Costo: " << mejor_solucion.second << endl;
     return 0;
 }
-
 
 
 
