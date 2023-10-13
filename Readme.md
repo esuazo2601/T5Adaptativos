@@ -6,19 +6,19 @@
 En este proyecto se implementó una metaheurística GRASP para mejorar los algoritmos greedy de la entrega anterior.
 
 ## Contenido de la entrega:
-- greedy-probabilista.cpp : Es el algoritmo greedy al que posteriormente se le aplica una Local Search.
-- T5Grasp.cpp : Es el algoritmo de GRASP finalmente implementado, diseñado para correr una instancia a la vez.
-- GraspDataset.cpp : Son los mismos algoritmos que en el archivo anterior pero adaptados para correr 100 instancias en una ejecución, de tamaño m x l.
+1. greedy-probabilista.cpp : Es el algoritmo greedy al que posteriormente se le aplica una Local Search.
+1. T5Grasp.cpp : Es el algoritmo de GRASP finalmente implementado, diseñado para correr una instancia a la vez.
+1. GraspDataset.cpp : Son los mismos algoritmos que en el archivo anterior pero adaptados para correr 100 instancias en una ejecución, de tamaño m x l.
 
 ## Parámetros:
-- En el caso de T5Grasp.cpp los parámetros usables son:
+1. En el caso de T5Grasp.cpp los parámetros usables son:
 
 * -i : Indica la instancia a ejecutar.
 * -t : Indica el tiempo maximo de ejecucion del algoritmo.
 * -it : Intentos maximos que tendrá el LS para mejorar la solución entregada por el Greedy
 * -d : El grado de determinismo que usará el greedy-probabilista.
 
-- En el caso de GraspDataset.cpp los parámetros usables son:
+1. En el caso de GraspDataset.cpp los parámetros usables son:
 * Los mismos pero se elimina la instancia a ejecutar.
 
 ## Instrucciones de compilación
@@ -40,4 +40,4 @@ g++ GraspDataset.cpp greedy-probabilista.cpp -o <Nombre archivo salida>
 ```
 ./<Nombre archivo salida> -t <tiempo> -it <intentos> -d <determinismo>
 ```
-** Cabe destacar que las 100 instancias deben estar en la misma carpeta que el ejecutable creado  **
+**Cabe destacar que las 100 instancias deben estar en la misma carpeta que el ejecutable creado**
