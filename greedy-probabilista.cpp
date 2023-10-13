@@ -89,17 +89,11 @@ pair<string,int> Greedy_probabilista(vector<string>mat, int deter_int){
         }
     }
 
-    //Se muestra por pantalla la cadena resultante
-    for (int i = 0; i < lenX; i++) {
-        cout << resultado[i] <<" ";
-    }
-    cout<<endl;
     int costo_total = 0;
     for(int i=0;i<lenY; i++){
         int dist_2 = dist[i].first*dist[i].first;
         costo_total += dist_2;
     }
-    cout<< "Costo Total: "<<costo_total<<endl;
     return make_pair(resultado,costo_total);
 }
 //Se retorna 0 si las letras son iguales, de lo contrario 1, se usa para sumar distancia.

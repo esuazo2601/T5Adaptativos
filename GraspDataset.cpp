@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include <string>
+#include <limits.h>
 
 using namespace std;
 
@@ -89,39 +90,51 @@ pair<string, int> busqueda_local(const string& solucion_actual, const vector<str
 }
 
 int main(int argc, char* argv[]) {
-    srand(time(NULL));
-    if (argc != 7 || string(argv[1]) != "-t" || string(argv[3]) !=  "-it" || string (argv[5]) != "-d") {
-        cout << "Uso incorrecto. -t <tiempo> -it <intentos>" << endl;
+    srand(time(nullptr));
+    if (argc != 7 || string(argv[1]) != "-t" || string(argv[3]) != "-it" || string(argv[5]) != "-d") {
+        std::cout << "Uso incorrecto. -t <tiempo> -it <intentos> -d <determinismo>" << endl;
         return 1; // Código de error
     }
 
-    for(int i=0;i<100;i++){
-        string instancia = "inst_200_15_4_"+to_string(i)+".txt";
+    int m,l;
+    std::cout<<"Tamaño de las instancias (m x l)"<<endl;
+    cin>>m>>l;
+
+    std::cout << "inst ;" << " m;" << " l;" << " mh;" << " mhtime" << endl;
+    for (int i = 0; i < 100; i++) {
+        string instancia = "inst_"+ to_string(m)+"_"+to_string(l)+"_4_" + to_string(i) + ".txt";
         long long tiempo_max_segundos = stoi(argv[2]); // Convierte el tiempo máximo a segundos
         int intentos = stoi(argv[4]);
         int determinismo = stoi(argv[6]);
-        long long tiempo_max_ms = tiempo_max_segundos * 1000; // Convierte a milisegundos
         vector<string> entrada = lee_instancia(instancia);
         int len = entrada[0].length();
-        long long start_time = getCurrentTimeMillis();
-        long long end_time = start_time + tiempo_max_ms; // Calcula el tiempo de finalización
 
-        pair<int,int> mejor_global; // Tiempo, Costo
-        while (getCurrentTimeMillis() < end_time) {
-            pair<string,int> greedy = Greedy_probabilista(entrada,determinismo);
-            pair<string,int> primera_sol = greedy;
+        auto tiempoInicio = chrono::high_resolution_clock::now();
 
-            pair<string,int> bl = busqueda_local(greedy.first,entrada,intentos);
-            pair<string,int> mejor_sol = bl;
-            cout<<mejor_sol.second<<" "<<primera_sol.second<<endl;
-            if (mejor_sol.second < primera_sol.second) {
-                mejor_global.second = mejor_sol.second;
+        pair<string, int> mejor_global; // Solución global
+        mejor_global.second = INT_MAX;
+        while (true) {
+            auto tiempoActual = chrono::high_resolution_clock::now();
+            auto duracion = chrono::duration_cast<chrono::seconds>(tiempoActual - tiempoInicio);
 
-                long long tiempo_actual = getCurrentTimeMillis();
-                mejor_global.first = (tiempo_actual-start_time)/1000.0;
+            if (duracion.count() >= tiempo_max_segundos) {
+                break; // Sal del bucle while y pasa a la siguiente iteración del bucle for
+            }
+
+            pair<string, int> greedy = Greedy_probabilista(entrada, determinismo);
+            pair<string, int> bl = busqueda_local(greedy.first, entrada, intentos);
+
+            if (bl.second < mejor_global.second) {
+                mejor_global.second = bl.second;
+                auto tiempoTranscurrido = chrono::duration_cast<chrono::seconds>(chrono::high_resolution_clock::now() - tiempoInicio);
+                mejor_global.first = to_string(tiempoTranscurrido.count());
             }
         }
-        cout << "Mejor solución para la instancia " << instancia << "es: " << mejor_global.second << "en tiempo: "<<mejor_global.first<<endl;
-    }
+        
+        std::cout << i <<" ;" << m << " ;" << l <<" ;"<< mejor_global.second << " ;" << mejor_global.first;
+        std::cout<<endl;
+    }   
+
     return 0;
 }
+
