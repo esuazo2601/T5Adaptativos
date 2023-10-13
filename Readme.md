@@ -18,7 +18,7 @@ En este proyecto se implementó una metaheurística GRASP para mejorar los algor
 * -it : Intentos maximos que tendrá el LS para mejorar la solución entregada por el Greedy
 * -d : El grado de determinismo que usará el greedy-probabilista.
 
-1. En el caso de GraspDataset.cpp los parámetros usables son:
+2. En el caso de GraspDataset.cpp los parámetros usables son:
 * Los mismos pero se elimina la instancia a ejecutar.
 
 ## Instrucciones de compilación
