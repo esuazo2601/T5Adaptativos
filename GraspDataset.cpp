@@ -7,6 +7,7 @@
 #include <thread>
 #include <string>
 #include <limits.h>
+#include <iomanip> 
 
 using namespace std;
 
@@ -126,8 +127,10 @@ int main(int argc, char* argv[]) {
 
             if (bl.second < mejor_global.second) {
                 mejor_global.second = bl.second;
-                auto tiempoTranscurrido = chrono::duration_cast<chrono::seconds>(chrono::high_resolution_clock::now() - tiempoInicio);
-                mejor_global.first = to_string(tiempoTranscurrido.count());
+                auto tiempoTranscurrido = chrono::high_resolution_clock::now() - tiempoInicio;
+                float tiempoEnSegundos = chrono::duration<float>(tiempoTranscurrido).count();
+                
+                mejor_global.first = to_string(tiempoEnSegundos);
             }
         }
         
